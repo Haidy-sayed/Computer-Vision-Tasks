@@ -13,6 +13,11 @@ from PyQt5 import QtGui
 from PyQt5.QtWidgets import QApplication,QWidget, QVBoxLayout, QPushButton, QFileDialog , QLabel, QTextEdit
 import sys
 from PyQt5.QtGui import QPixmap
+from pyqtgraph import PlotWidget
+import pyqtgraph
+from pyqtgraph import *
+import pyqtgraph as pg
+from pyqtgraph import PlotWidget, PlotItem
 
 
 
@@ -65,11 +70,11 @@ class Ui_MainWindow(object):
         self.line.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.line.setObjectName("line")
         self.horizontalLayout_2.addWidget(self.line)
-        self.controlsWidget = QtWidgets.QWidget(self.imageAndHistogramWidget)
-        self.controlsWidget.setObjectName("controlsWidget")
-        self.gridLayout = QtWidgets.QGridLayout(self.controlsWidget)
+        self.HistogramWidget = QtWidgets.QWidget(self.imageAndHistogramWidget)
+        self.HistogramWidget.setObjectName("HistogramWidget")
+        self.gridLayout = QtWidgets.QGridLayout(self.HistogramWidget)
         self.gridLayout.setObjectName("gridLayout")
-        self.horizontalLayout_2.addWidget(self.controlsWidget)
+        self.horizontalLayout_2.addWidget(self.HistogramWidget)
         self.verticalLayout_3.addLayout(self.horizontalLayout_2)
         self.verticalLayout.addWidget(self.imageAndHistogramWidget)
         self.line_3 = QtWidgets.QFrame(self.widget)
@@ -249,12 +254,31 @@ class Ui_MainWindow(object):
         self.actionMedium_pass.triggered.connect(lambda: self.filterSelection("MED"))
         self.actionLa_placian.triggered.connect(lambda: self.filterSelection("PLA"))
         self.actionHistogram.triggered.connect(lambda: self.histogramRun())
+        self.actionSave_Histogram.triggered.connect(lambda : self.saveImag("Histogram"))
+        self.actionFreq_filtered.triggered.connect(lambda : self.saveImag("FreqFilter"))
+        self.actionFrom_ch_2.triggered.connect(lambda : self.saveImag("SpatialFilter"))
 
         #Declaration of any global variables 
         self.logHistory=[] #A list created in order to log every action on the gui from its start till its closed by the user 
         self.ImageXsize=364
         
     #Start of functions 
+    #Save image function
+    def saveImag(self, whichScreenText):
+        self.logging("The save image function was called")
+        if whichScreenText=="Histogram":
+            self.logging("The GUI is now saving the histogram as a png image")
+            img=pyqtgraph.exporters.ImageExporter(self.HistogramWidget.scene())
+            img.export('The_Histogram.png') 
+        elif whichScreenText=="FreqFilter":
+            self.logging("The GUI is now saving the Image from the frequency domian as a png image")
+            img=pyqtgraph.exporters.ImageExporter(self.FilterInFDomainWidget.scene())
+            img.export('The_Image_from_the_freq_domain.png') 
+        else:
+            self.logging("The GUI is now saving the image from the spatial domain as a png image")
+            img=pyqtgraph.exporters.ImageExporter(self.filterInTDomainWidget.scene())
+            img.export('The_Image_from_the_spatial_domain.png') 
+
     #Histogram implementation function
     def histogramRun(self):
         pass
