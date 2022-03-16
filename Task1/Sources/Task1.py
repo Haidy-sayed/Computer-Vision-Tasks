@@ -9,6 +9,11 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtGui
+from PyQt5.QtWidgets import QApplication,QWidget, QVBoxLayout, QPushButton, QFileDialog , QLabel, QTextEdit
+import sys
+from PyQt5.QtGui import QPixmap
+
 
 
 class Ui_MainWindow(object):
@@ -50,8 +55,10 @@ class Ui_MainWindow(object):
         self.verticalLayout_3.addLayout(self.horizontalLayout_6)
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
-        self.ImageWidget = QtWidgets.QWidget(self.imageAndHistogramWidget)
+        self.ImageWidget = QLabel(self.imageAndHistogramWidget)
         self.ImageWidget.setObjectName("ImageWidget")
+        self.ImageWidget.setMaximumWidth(644)
+        self.ImageWidget.setMaximumHeight(600)
         self.horizontalLayout_2.addWidget(self.ImageWidget)
         self.line = QtWidgets.QFrame(self.imageAndHistogramWidget)
         self.line.setFrameShape(QtWidgets.QFrame.VLine)
@@ -230,6 +237,63 @@ class Ui_MainWindow(object):
         self.actionFrequency_Domain.setText(_translate("MainWindow", "Frequency Domain"))
         self.actionSave_Histogram.setText(_translate("MainWindow", "Save Histogram"))
         self.actionFreq_filtered.setText(_translate("MainWindow", "Freq filtered"))
+
+
+        #Adding actions to menu items or buttons if there are any
+        self.actionExit.triggered.connect(lambda: self.exit() )
+        self.actionBrowse_an_image.triggered.connect(lambda: self.browseAnImg())
+        self.actionSpatial_Domain.triggered.connect(lambda: self.setDomain("S"))
+        self.actionFrequency_Domain.triggered.connect(lambda: self.setDomain("F"))
+        self.actionLow_pass.triggered.connect(lambda: self.filterSelection("LO"))
+        self.actionHigh_pass.triggered.connect(lambda: self.filterSelection("HI"))
+        self.actionMedium_pass.triggered.connect(lambda: self.filterSelection("MED"))
+        self.actionLa_placian.triggered.connect(lambda: self.filterSelection("PLA"))
+        self.actionHistogram.triggered.connect(lambda: self.histogramRun())
+
+        #Declaration of any global variables 
+        self.logHistory=[] #A list created in order to log every action on the gui from its start till its closed by the user 
+        self.ImageXsize=364
+        
+    #Start of functions 
+    #Histogram implementation function
+    def histogramRun(self):
+        pass
+    #Selection of filter function 
+    def filterSelection(self, filterTypeText):
+        pass
+    #Selecting the domain each time a filter is chosen to allow for different domain selection each time
+    def setDomain(self, domianIdentifierChar):
+        pass
+    #The browse image function 
+    def browseAnImg(self):
+        self.logging("browseAnImg function was called")
+        image=QFileDialog.getOpenFileName()
+        self.logging("Image path was chosen from the dialog box")
+        imagePath = image[0]
+        self.logging("image path is set to "+imagePath)
+        pixmap = QPixmap(imagePath)
+        #self.ImageWidget.resize(self.ImageXsize, self.ImageYsize)
+        #self.ImageWidget.adjustSize()
+
+        self.ImageWidget.setPixmap(QPixmap(pixmap).scaledToWidth(self.ImageXsize))
+        self.ImageWidget.setScaledContents(True)
+        print(self.ImageXsize)
+        print(pixmap.size())
+        self.ImageWidget.show()
+
+    #The Exit function 
+    def exit(self):
+        self.logging("Exit function was called")
+        sys.exit()
+        
+    #The logging function 
+    def logging(self, text):
+        f=open("Task1CVLog.txt","w+")
+        self.logHistory.append(text)
+        for i in self.logHistory:
+            f.write("=> %s\r\n" %(i))
+        f.close()
+
 
 
 if __name__ == "__main__":
