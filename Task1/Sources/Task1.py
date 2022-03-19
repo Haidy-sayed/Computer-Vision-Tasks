@@ -18,6 +18,14 @@ import pyqtgraph
 from pyqtgraph import *
 import pyqtgraph as pg
 from pyqtgraph import PlotWidget, PlotItem
+import cv2 as cv
+from matplotlib import pyplot as plt
+from math import sqrt
+from PIL import Image as im
+
+import cv2
+import numpy as np
+
 
 
 
@@ -82,7 +90,7 @@ class Ui_MainWindow(object):
         self.line_3.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.line_3.setObjectName("line_3")
         self.verticalLayout.addWidget(self.line_3)
-        self.filtersWigdet = QtWidgets.QWidget(self.widget)
+        self.filtersWigdet = QLabel(self.widget)
         self.filtersWigdet.setObjectName("filtersWigdet")
         self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.filtersWigdet)
         self.verticalLayout_2.setObjectName("verticalLayout_2")
@@ -107,7 +115,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_2.addLayout(self.horizontalLayout_5)
         self.horizontalLayout_3 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
-        self.filterInTDomainWidget = QtWidgets.QWidget(self.filtersWigdet)
+        self.filterInTDomainWidget = QLabel(self.filtersWigdet)
         self.filterInTDomainWidget.setObjectName("filterInTDomainWidget")
         self.horizontalLayout_3.addWidget(self.filterInTDomainWidget)
         self.line_2 = QtWidgets.QFrame(self.filtersWigdet)
@@ -115,7 +123,7 @@ class Ui_MainWindow(object):
         self.line_2.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.line_2.setObjectName("line_2")
         self.horizontalLayout_3.addWidget(self.line_2)
-        self.FilterInFDomainWidget = QtWidgets.QWidget(self.filtersWigdet)
+        self.FilterInFDomainWidget = QLabel(self.filtersWigdet)
         self.FilterInFDomainWidget.setObjectName("FilterInFDomainWidget")
         self.horizontalLayout_3.addWidget(self.FilterInFDomainWidget)
         self.verticalLayout_2.addLayout(self.horizontalLayout_3)
@@ -284,18 +292,90 @@ class Ui_MainWindow(object):
         pass
     #Selection of filter function 
     def filterSelection(self, filterTypeText):
-        pass
+        if self.domain=="Frequency":
+            img = cv.imread(self.imagePath,0)
+            rows,cols = img.shape
+            crow,ccol = rows//2 , cols//2
+            if filterTypeText=="HI":
+                self.frequencydomain("HI",self.imagePath)
+                self.fourier_tranf_shift[crow-30:crow+31, ccol-30:ccol+31] = 0
+                f_ishift = np.fft.ifftshift(self.fourier_tranf_shift)
+                img_back = np.fft.ifft2(f_ishift)
+                img_back = np.real(img_back)
+                self.setpixmapspatial(img_back)
+
+            elif filterTypeText=="LO":
+                dft = cv.dft(np.float32(img),flags = cv.DFT_COMPLEX_OUTPUT)
+                dft_shift = np.fft.fftshift(dft)
+                magnitude_spectrum = 20*np.log(cv.magnitude(dft_shift[:,:,0],dft_shift[:,:,1]))
+                self.setpixmapfourier(magnitude_spectrum)
+                mask = np.zeros((rows,cols,2),np.uint8)
+                mask[crow-30:crow+30, ccol-30:ccol+30] = 1
+                fshift = dft_shift*mask
+                f_ishift = np.fft.ifftshift(fshift)
+                img_back = cv.idft(f_ishift)
+                img_back = cv.magnitude(img_back[:,:,0],img_back[:,:,1])
+                self.setpixmapspatial(img_back)
+        elif self.domain=="Spatial":
+            if filterTypeText=="HI":
+                print("it's not valid")
+            elif filterTypeText=="LO":
+                print("it's not valid")
+            elif filterTypeText=="MED":
+                self.final = cv2.medianBlur(self.im, 5)
+                self.setpixmap(self.final)
+                self.frequencydomain("MED","filteredimage.jpg") 
+            elif filterTypeText=="PLA":
+                self.final = cv2.Laplacian(self.im, cv2.CV_16S, ksize=3)
+                self.abs_final = cv2.convertScaleAbs(self.final)
+                self.setpixmap(self.abs_final)
+                self.frequencydomain("PLA","filteredimage.jpg")
+
+    def setpixmap(self,image):
+        data = im.fromarray(image)
+        data.save('filteredimage.jpg')
+        self.filterInTDomainWidget.setPixmap(QPixmap("filteredimage.jpg").scaledToWidth(self.ImageXsize))
+        self.filterInTDomainWidget.setScaledContents(True)
+
+    def frequencydomain(self,filter,image):
+        self.read_img=cv.imread(image,0)
+        self.fourier_tranf = np.fft.fft2(self.read_img)
+        self.fourier_tranf_shift = np.fft.fftshift(self.fourier_tranf)
+        magnitude_spectrum = 20*np.log(np.abs(self.fourier_tranf_shift))
+        self.setpixmapfourier(magnitude_spectrum)
+        
+    def setpixmapfourier(self,image):
+        data = im.fromarray(image)
+        new_p = data.convert("L")
+        new_p.save('filteredimage2.png')
+        self.FilterInFDomainWidget.setPixmap(QPixmap("filteredimage2.png").scaledToWidth(self.ImageXsize))
+        self.FilterInFDomainWidget.setScaledContents(True)
+
+    def setpixmapspatial(self,image):
+        data = im.fromarray(image)
+        new_p = data.convert("L")
+        new_p.save('medfilterimage2.png')
+        self.filterInTDomainWidget.setPixmap(QPixmap("medfilterimage2.png").scaledToWidth(self.ImageXsize))
+        self.filterInTDomainWidget.setScaledContents(True)
+
     #Selecting the domain each time a filter is chosen to allow for different domain selection each time
     def setDomain(self, domianIdentifierChar):
-        pass
+        if domianIdentifierChar=='F':
+            self.domain="Frequency"
+        else:
+            self.domain="Spatial"
     #The browse image function 
     def browseAnImg(self):
         self.logging("browseAnImg function was called")
         image=QFileDialog.getOpenFileName()
         self.logging("Image path was chosen from the dialog box")
-        imagePath = image[0]
-        self.logging("image path is set to "+imagePath)
-        pixmap = QPixmap(imagePath)
+        self.imagePath = image[0]
+        print(self.imagePath)
+
+        self.im = cv2.imread(self.imagePath)
+        
+        self.logging("image path is set to "+self.imagePath)
+        pixmap = QPixmap(self.imagePath)
         #self.ImageWidget.resize(self.ImageXsize, self.ImageYsize)
         #self.ImageWidget.adjustSize()
 
