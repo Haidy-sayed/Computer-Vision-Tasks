@@ -68,10 +68,8 @@
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_2">
               <item>
-               <widget class="QLabel" name="LoadedImageLabel">
-                <property name="text">
-                 <string/>
-                </property>
+               <widget class="QWidget" name="LoadedImageWidget" native="true">
+                <layout class="QHBoxLayout" name="horizontalLayout_9"/>
                </widget>
               </item>
               <item>
@@ -82,10 +80,8 @@
                </widget>
               </item>
               <item>
-               <widget class="QLabel" name="OriginalHistoGramLabel">
-                <property name="text">
-                 <string/>
-                </property>
+               <widget class="QWidget" name="OriginalHistogramWidget" native="true">
+                <layout class="QHBoxLayout" name="horizontalLayout_10"/>
                </widget>
               </item>
              </layout>
@@ -95,13 +91,13 @@
          </item>
          <item>
           <widget class="QWidget" name="equalizedHistogramWidget" native="true">
-           <widget class="QWidget" name="">
+           <widget class="QWidget" name="layoutWidget">
             <property name="geometry">
              <rect>
               <x>10</x>
               <y>0</y>
               <width>741</width>
-              <height>171</height>
+              <height>161</height>
              </rect>
             </property>
             <layout class="QVBoxLayout" name="verticalLayout_4">
@@ -150,10 +146,8 @@
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_7">
                <item>
-                <widget class="QLabel" name="revertedImageLabel">
-                 <property name="text">
-                  <string/>
-                 </property>
+                <widget class="QWidget" name="ImageFromEqualizedHistogramWidget" native="true">
+                 <layout class="QHBoxLayout" name="horizontalLayout_11"/>
                 </widget>
                </item>
                <item>
@@ -164,10 +158,8 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="equalizedHistogramLabel">
-                 <property name="text">
-                  <string/>
-                 </property>
+                <widget class="QWidget" name="EqualizedHistogramWidget" native="true">
+                 <layout class="QHBoxLayout" name="horizontalLayout_12"/>
                 </widget>
                </item>
               </layout>
@@ -231,10 +223,8 @@
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_3">
               <item>
-               <widget class="QLabel" name="filterInSpatialDomian">
-                <property name="text">
-                 <string/>
-                </property>
+               <widget class="QWidget" name="FilterInSpatialDomainWidget" native="true">
+                <layout class="QHBoxLayout" name="horizontalLayout_13"/>
                </widget>
               </item>
               <item>
@@ -245,10 +235,8 @@
                </widget>
               </item>
               <item>
-               <widget class="QLabel" name="filterInFreqDomain">
-                <property name="text">
-                 <string/>
-                </property>
+               <widget class="QWidget" name="FilterInFreqDomainWidget" native="true">
+                <layout class="QHBoxLayout" name="horizontalLayout_14"/>
                </widget>
               </item>
              </layout>
