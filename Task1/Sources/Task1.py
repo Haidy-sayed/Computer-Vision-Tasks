@@ -22,6 +22,7 @@ import cv2 as cv
 from matplotlib import pyplot as plt
 from math import sqrt
 from PIL import Image as im
+import pyqtgraph.exporters
 
 import cv2
 import numpy as np
@@ -115,7 +116,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_2.addLayout(self.horizontalLayout_5)
         self.horizontalLayout_3 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
-        self.filterInTDomainWidget = QLabel(self.filtersWigdet)
+        self.filterInTDomainWidget = QtWidgets.QWidget(self.filtersWigdet)
         self.filterInTDomainWidget.setObjectName("filterInTDomainWidget")
         self.horizontalLayout_3.addWidget(self.filterInTDomainWidget)
         self.line_2 = QtWidgets.QFrame(self.filtersWigdet)
@@ -123,7 +124,7 @@ class Ui_MainWindow(object):
         self.line_2.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.line_2.setObjectName("line_2")
         self.horizontalLayout_3.addWidget(self.line_2)
-        self.FilterInFDomainWidget = QLabel(self.filtersWigdet)
+        self.FilterInFDomainWidget = QtWidgets.QWidget(self.filtersWigdet)
         self.FilterInFDomainWidget.setObjectName("FilterInFDomainWidget")
         self.horizontalLayout_3.addWidget(self.FilterInFDomainWidget)
         self.verticalLayout_2.addLayout(self.horizontalLayout_3)
