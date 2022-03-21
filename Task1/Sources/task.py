@@ -51,10 +51,10 @@ class mainApp(QtWidgets.QMainWindow):
         self.ui.actionExit.triggered.connect(lambda: self.exit() )
         self.ui.actionBrowse_an_image.triggered.connect(lambda: self.browseAnImg())
         self.ui.actionHistogram_Equalization.triggered.connect(lambda: self.histogramRun())
-        self.ui.actionSave_Histogram.triggered.connect(lambda: self.saveImag("Histogram"))
+        self.ui.actionFrom_ch_1.triggered.connect(lambda: self.saveImag("Histogram"))
         self.ui.actionFreq_filtered.triggered.connect(lambda : self.saveImag("FreqFilter"))
         self.ui.actionFrom_ch_2.triggered.connect(lambda : self.saveImag("SpatialFilter"))
-        self.ui.actionEqualized_histogram.triggered.connect(lambda: self.saveImag("EqHistogram"))
+        self.ui.actionSave_equalized_histogram.triggered.connect(lambda: self.saveImag("EqHistogram"))
         self.ui.actionReversed_image_from_Eq_histo.triggered.connect(lambda: self.saveImag("RevImage"))
         self.ui.actionSpatial_Domain.triggered.connect(lambda: self.setDomain("S"))
         self.ui.actionFrequency_Domain.triggered.connect(lambda: self.setDomain("F"))
@@ -83,25 +83,31 @@ class mainApp(QtWidgets.QMainWindow):
         self.ImageXsize=364
         
     #Start of functions 
+    def saveLocation(self):
+        filePath, _ = QFileDialog.getSaveFileName(self, "Save Image", "",
+						"PNG(*.png);;JPEG(*.jpg *.jpeg);;All Files(*.*) ")
+
+        return filePath
     #Save image function
     def saveImag(self, whichScreenText):
         self.logging("The save image function was called")
+        path= self.saveLocation()
         if whichScreenText=="Histogram":
             self.logging("The GUI is now saving the histogram as a png image")
-            img=self.HistogramResult
-            img.save('The_Histogram.png') 
+            img=self.canvHistogram
+            img.savefig(path) 
         elif whichScreenText=="FreqFilter":
             self.logging("The GUI is now saving the Image from the frequency domian as a png image")
-            img=pyqtgraph.exporters.ImageExporter(self.ui.FilterInFreqDomainWidget.scene())
-            img.export('The_Image_from_the_freq_domain.png') 
+            img=self.canvEqualized
+            img.save(path) 
         elif whichScreenText=="SpatialFilter":
             self.logging("The GUI is now saving the image from the spatial domain as a png image")
             img=pyqtgraph.exporters.ImageExporter(self.ui.FilterInSpatialDomainWidget.scene())
-            img.export('The_Image_from_the_spatial_domain.png') 
+            img.export(path) 
         elif whichScreenText=="EqHistogram":
             self.logging("The GUI is now saving the image from the equalized histogram as a png image")
-            img=self.output_image
-            img.save('The_Image_from_the_spatial_domain.png')
+            img=pyqtgraph.exporters.ImageExporter(self.ui.verticalLayout_8.scene())
+            img.export('The_Image_from_the_spatial_domain.png')
         elif whichScreenText=="RevImage":
             self.logging("The GUI is now saving the returned image from the equalized histogram as a png image")
             img=pyqtgraph.exporters.ImageExporter(self.ui.verticalLayout_7.scene())
@@ -110,7 +116,7 @@ class mainApp(QtWidgets.QMainWindow):
             self.logging("There must be an error occured here because the function was called without one of the specified texts, check for any bugs here")
             
 
-
+ 
 
     #The Exit function 
     def exit(self):
@@ -182,7 +188,7 @@ class mainApp(QtWidgets.QMainWindow):
 
         self.HistogramEqualized=self.make_histogram(self.new_image)
 
-        self.output_image = Image.fromarray(np.uint8(self.new_image.reshape((IMG_H, IMG_W))))
+        output_image = Image.fromarray(np.uint8(self.new_image.reshape((IMG_H, IMG_W))))
 
 
         x_axis = np.arange(256)
@@ -191,7 +197,7 @@ class mainApp(QtWidgets.QMainWindow):
         self.canvNewImage.axes.cla()
         self.canvHistogram.axes.bar(x_axis, self.HistogramResult)
         self.canvEqualized.axes.bar(x_axis, self.HistogramEqualized)
-        self.canvNewImage.axes.imshow(self.output_image, cmap=plt.get_cmap('gray'))
+        self.canvNewImage.axes.imshow(output_image, cmap=plt.get_cmap('gray'))
         self.canvHistogram.draw()
         self.canvEqualized.draw()
         self.canvNewImage.draw()
@@ -248,11 +254,11 @@ class mainApp(QtWidgets.QMainWindow):
             elif filterTypeText=="LO":
                 print("it's not valid")
             elif filterTypeText=="MED":
-                self.final = cv2.medianBlur(self.im, 5)
+                self.final = cv2.medianBlur(self.image, 5)
                 self.setpixmap(self.final)
                 self.frequencydomain("MED","filteredimage.jpg") 
             elif filterTypeText=="PLA":
-                self.final = cv2.Laplacian(self.im, cv2.CV_16S, ksize=3)
+                self.final = cv2.Laplacian(self.image, cv2.CV_16S, ksize=3)
                 self.abs_final = cv2.convertScaleAbs(self.final)
                 self.setpixmap(self.abs_final)
                 self.frequencydomain("PLA","filteredimage.jpg")
@@ -260,8 +266,8 @@ class mainApp(QtWidgets.QMainWindow):
     def setpixmap(self,image):
         data = Image.fromarray(image)
         data.save('filteredimage.jpg')
-        self.ui.FilterInSpatialDomainWidget.setPixmap(QPixmap("filteredimage.jpg").scaledToWidth(self.ImageXsize))
-        self.ui.FilterInSpatialDomainWidget.setScaledContents(True)
+        self.ui.filterInSDomianLabel.setPixmap(QPixmap("filteredimage.jpg").scaledToWidth(self.ImageXsize))
+        self.ui.filterInSDomianLabel.setScaledContents(True)
 
     def frequencydomain(self,filter,image):
         self.read_img=cv.imread(image,0)
