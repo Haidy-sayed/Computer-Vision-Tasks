@@ -295,27 +295,47 @@ class Ui_MainWindow(object):
         if self.domain=="Frequency":
             img = cv.imread(self.imagePath,0)
             rows,cols = img.shape
+            
             crow,ccol = rows//2 , cols//2
             if filterTypeText=="HI":
                 self.frequencydomain("HI",self.imagePath)
                 self.fourier_tranf_shift[crow-30:crow+31, ccol-30:ccol+31] = 0
+
                 f_ishift = np.fft.ifftshift(self.fourier_tranf_shift)
                 img_back = np.fft.ifft2(f_ishift)
                 img_back = np.real(img_back)
+                print(type(img_back))
+                print(img_back.shape)
                 self.setpixmapspatial(img_back)
 
             elif filterTypeText=="LO":
-                dft = cv.dft(np.float32(img),flags = cv.DFT_COMPLEX_OUTPUT)
-                dft_shift = np.fft.fftshift(dft)
-                magnitude_spectrum = 20*np.log(cv.magnitude(dft_shift[:,:,0],dft_shift[:,:,1]))
-                self.setpixmapfourier(magnitude_spectrum)
-                mask = np.zeros((rows,cols,2),np.uint8)
-                mask[crow-30:crow+30, ccol-30:ccol+30] = 1
-                fshift = dft_shift*mask
-                f_ishift = np.fft.ifftshift(fshift)
-                img_back = cv.idft(f_ishift)
-                img_back = cv.magnitude(img_back[:,:,0],img_back[:,:,1])
+                self.frequencydomain("LO",self.imagePath)
+
+                self.mask = np.zeros((rows,cols,2),np.uint8)
+                self.mask[crow-50:crow+51, ccol-50:ccol+51] = 1
+                self.fourier_tranf_shift = self.mask[:,:,0] *self.fourier_tranf_shift
+                f_ishift = np.fft.ifftshift(self.fourier_tranf_shift)
+                img_back = np.fft.ifft2(f_ishift)
+                img_back = np.real(img_back)
+                print(type(img_back))
+                print(img_back.shape)
                 self.setpixmapspatial(img_back)
+
+                
+
+                # self.dft = cv.dft(np.float32(img),flags = cv.DFT_COMPLEX_OUTPUT)
+                # self.dft_shift = np.fft.fftshift(self.dft)
+                # self.magnitude_spectrum = 20*np.log(cv.magnitude(self.dft_shift[:,:,0],self.dft_shift[:,:,1]))
+                # self.setpixmapfourier(self.mask)
+                # fshift = self.dft_shift*self.mask
+                # f_ishift = np.fft.ifftshift(fshift)
+                # img_back = cv2.idft(f_ishift)
+                # img_back = cv2.magnitude(img_back[:,:,0],img_back[:,:,1])
+                # print(type(img_back))
+                # print(img_back.shape)
+                # self.setpixmapspatial(img_back)
+ 
+                
         elif self.domain=="Spatial":
             if filterTypeText=="HI":
                 print("it's not valid")
