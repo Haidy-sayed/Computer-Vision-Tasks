@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'Task1GUIEdited.ui'
+# Form implementation generated from reading ui file 'Task1GUIEDITED.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.4
 #
@@ -240,11 +240,7 @@ class Ui_MainWindow(object):
         self.actionHistogram_Equalization.setObjectName("actionHistogram_Equalization")
         self.menuFile.addAction(self.actionBrowse_an_image)
         self.menuFile.addAction(self.actionExit)
-        self.menuSave_Image.addAction(self.actionFrom_ch_1)
-        self.menuSave_Image.addAction(self.actionFrom_ch_2)
         self.menuSave_Image.addAction(self.actionFreq_filtered)
-        self.menuSave_Image.addAction(self.actionSave_equalized_histogram)
-        self.menuSave_Image.addAction(self.actionReversed_image_from_Eq_histo)
         self.menuFilters.addAction(self.actionLow_pass)
         self.menuFilters.addAction(self.actionMedium_pass)
         self.menuFilters.addAction(self.actionHigh_pass)
@@ -311,6 +307,7 @@ class Ui_MainWindow(object):
         self.actionSave_equalized_histogram.setText(_translate("MainWindow", "Equalized histogram"))
         self.actionReversed_image_from_Eq_histo.setText(_translate("MainWindow", "Reversed image from Eq. histo."))
         self.actionHistogram_Equalization.setText(_translate("MainWindow", "Histogram Equalization"))
+        self.actionHistogram_Equalization.setShortcut(_translate("MainWindow", "Ctrl+S"))
 
 
 if __name__ == "__main__":
