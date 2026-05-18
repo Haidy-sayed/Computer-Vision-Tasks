@@ -1,0 +1,3 @@
+=> browseAnImg function was called
+=> Image path was chosen from the dialog box
+=> image path is set to C:/Users/Haidi/PyCharmMiscProject/Github/Computer-Vision-Tasks/Task1/Media/pexels-jean-van-der-meulen-1526403.jpg
