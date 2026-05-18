@@ -1,3 +1,0 @@
-=> browseAnImg function was called
-=> Image path was chosen from the dialog box
-=> image path is set to F:/PYTHON/bin/kP0u2.png
